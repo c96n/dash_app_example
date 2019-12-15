@@ -12,7 +12,7 @@ import plotly.graph_objs as go
 import pandas as pd
 import numpy as np
 
-#preprocessing
+# preprocessing
 df = pd.read_csv("nama_10_gdp_1_Data.csv")
 
 available_indicators = df['NA_ITEM'].unique()
@@ -21,35 +21,35 @@ available_units = df['UNIT'].unique()
 available_units = np.sort(available_units)
 available_countries = df['GEO'].unique()
 
-#start building the app
+# start building the app
 app = dash.Dash(__name__)
 server = app.server
 app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 
-#header
-app.layout = html.Div([  
+# header
+app.layout = html.Div([
     html.Div([
         html.H1(children="European GDP Data Dashboard",
-               style={
-                   'textAlign': 'center'
-               })
+                style={
+                    'textAlign': 'center'
+                })
     ]),
-        
-#first output layout
-    
-    #header Text first graph
+
+    # first output layout
+
+    # header Text first graph
     html.Div([
         html.H2(children="First Graph: Relation between two of the indicators",
-                 style={
-                   'textAlign': 'center'
-               }),
+                style={
+                    'textAlign': 'center'
+                }),
     ]),
-    
-    #input indicator
+
+    # input indicator
     html.Div([
         html.H4(children="Please select the first indicator:",
                 style={'textAlign': 'center'}
-               ),
+                ),
         html.Div([
             dcc.Dropdown(
                 id="indicator_x1",
@@ -61,16 +61,16 @@ app.layout = html.Div([
                 options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
                 value='Linear',
                 labelStyle={'display': 'inline-block'}
-            ), 
+            ),
         ],
             style={'width': '100%', 'display': 'inline-block', 'textAlign': 'center'}),
-    ]), 
-    
-    #input second indicator    
+    ]),
+
+    # input second indicator
     html.Div([
         html.H4(children="Please select the second indicator:",
                 style={
-                'textAlign': 'center'
+                    'textAlign': 'center'
                 }),
         html.Div([
             dcc.Dropdown(
@@ -87,12 +87,12 @@ app.layout = html.Div([
         ],
             style={'width': '100%', 'display': 'inline-block', 'textAlign': 'center'}),
     ]),
-    
-    #input unit   
+
+    # input unit
     html.Div([
         html.H4(children="Please select the unit:",
                 style={
-                'textAlign': 'center'
+                    'textAlign': 'center'
                 }),
         html.Div([
             dcc.Dropdown(
@@ -104,13 +104,13 @@ app.layout = html.Div([
             style={'width': '100%', 'display': 'inline-block', 'textAlign': 'center'}),
     ]),
 
-    #year slider
+    # year slider
     html.Div([
         html.H4(children="Please select the desired year:",
                 style={
                     'textAlign': 'center'
                 }),
-            
+
         dcc.Slider(
             id='year--slider1',
             min=df['TIME'].min(),
@@ -119,29 +119,29 @@ app.layout = html.Div([
             step=None,
             marks={str(year): str(year) for year in df['TIME'].unique()}),
     ]),
-    
-    #graph 1
+
+    # graph 1
     html.Div([
         dcc.Graph(id="indicator-graphic1"),
     ]),
-    
-    #border
+
+    # border
     html.Div([
         html.Hr(),
     ]),
-    
-    
-#second output layout
-    
-    #header Text second graph
+
+
+    # second output layout
+
+    # header Text second graph
     html.Div([
         html.H2(children="Second Graph: Historical Indicator performance per country",
-                     style={
-                       'textAlign': 'center'
-                   }),
+                style={
+                         'textAlign': 'center'
+                }),
     ]),
-    
-    #input country
+
+    # input country
     html.Div([
         html.H4(children="Please select the country:",
                 style={
@@ -156,8 +156,8 @@ app.layout = html.Div([
         ],
             style={'width': '100%', 'display': 'inline-block', 'textAlign': 'center'}),
     ]),
-    
-    #input indicator
+
+    # input indicator
     html.Div([
         html.H4(children="Please select the indicator:",
                 style={
@@ -178,11 +178,11 @@ app.layout = html.Div([
         ],
             style={'width': '100%', 'display': 'inline-block', 'textAlign': 'center'}),
     ]),
-    #input unit   
+    # input unit
     html.Div([
         html.H4(children="Please select the unit:",
                 style={
-                'textAlign': 'center'
+                    'textAlign': 'center'
                 }),
         html.Div([
             dcc.Dropdown(
@@ -193,14 +193,16 @@ app.layout = html.Div([
         ],
             style={'width': '100%', 'display': 'inline-block', 'textAlign': 'center'}),
     ]),
-    
-    #graph 1
+
+    # graph 1
     html.Div([
         dcc.Graph(id="indicator-graphic2"),
-    ]), 
+    ]),
 ])
 
-#callback for output 1
+# callback for output 1
+
+
 @app.callback(
     dash.dependencies.Output("indicator-graphic1", "figure"),
     [dash.dependencies.Input("indicator_x1", "value"),
@@ -209,13 +211,12 @@ app.layout = html.Div([
      dash.dependencies.Input('yaxis-type1', 'value'),
      dash.dependencies.Input('unit_1', 'value'),
      dash.dependencies.Input('year--slider1', 'value')])
-
-def update_graph(indicator_x_name, indicator_y_name, 
+def update_graph(indicator_x_name, indicator_y_name,
                  xaxis_type, yaxis_type, unit,
                  year_value):
-    dff=df[df["TIME"]==year_value]
-    dff=df[df["UNIT"]==unit]
-    
+    dff = df[df["TIME"] == year_value]
+    dff = df[df["UNIT"] == unit]
+
     return{
         'data': [go.Scatter(
             x=dff[dff['NA_ITEM'] == indicator_x_name]['Value'],
@@ -242,20 +243,21 @@ def update_graph(indicator_x_name, indicator_y_name,
         )
     }
 
-#callback for output 2
+# callback for output 2
+
+
 @app.callback(
     dash.dependencies.Output("indicator-graphic2", "figure"),
     [dash.dependencies.Input("countries", "value"),
      dash.dependencies.Input("indicator_y2", "value"),
      dash.dependencies.Input('yaxis-type2', 'value'),
      dash.dependencies.Input('unit_2', 'value')])
-
-def update_graph(country, indicator_y_name, 
+def update_graph(country, indicator_y_name,
                  yaxis_type, unit):
-    dff=df[df["GEO"]==country]
-    dff=dff[dff["NA_ITEM"]==indicator_y_name]
-    dff=dff[dff["UNIT"]==unit]
-    
+    dff = df[df["GEO"] == country]
+    dff = dff[dff["NA_ITEM"] == indicator_y_name]
+    dff = dff[dff["UNIT"] == unit]
+
     return{
         'data': [go.Scatter(
             x=dff['TIME'],
@@ -275,6 +277,6 @@ def update_graph(country, indicator_y_name,
         )
     }
 
+
 if __name__ == '__main__':
     app.run_server()
-
